@@ -21,3 +21,6 @@ XRACECAR2 is a simple race car game that runs in the terminal. One of the option
 There may or may not be dependencies that your environment may or may not have, and I don't intend on fixing any of that.
 This is here more of as a "here is what Cache looks like" than as a fully working thing (however feel free to try and use it
 at your own risk in a dev environment, but you should probably not use this in prod.)
+
+* Note: There was another file for the XPICARD routine, but that was lost. All it did was create an ascii representation
+  of Picard Facepalming.
