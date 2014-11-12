@@ -1,0 +1,33 @@
+^Fri Aug 3, 2007  9:46 AM^
+
+
+^ZHELLOWC
+ZHELLOWC ;; ; Aug 03, 2007  9:46 AM
+ n blg,handle,blarg,bohemion,foo,lastfoo
+ s bohemion=+$h
+ s blg=$$getidout(^%ZeUTT($I,"UID"),"EMP")*bohemion
+ ;w !,"BLG:",blg," ",$d(^BOSS2007("USERS",blg))
+ i '$d(^BOSS2007("USERS",blg)) g hw
+ s lastfoo=$p($h,",",2)
+ w !,"Welcome,",^BOSS2007("USERS",blg,"NAME")
+ w !,"Listening on ",$$dout(+$h)," at ",$$tout($p($h,",",2))
+ w !,"The arrow down is grace."
+ w !!
+main s handle=^BOSS2007("USERS",blg,"NAME")
+ i handle="" g gb
+ i ^BOSS2007("DISCO")="PANIC" w @%EA("EFF") w !,"Seg Fault" h
+ m blarg=^BOSS2007("ROOMS","DEFAULT")
+ s foo=lastfoo
+ f  s foo=$o(blarg(foo)) q:foo=""  d
+ . f f=1:1:blarg(foo,0) d
+ . . w blarg(foo,f),!
+ . s lastfoo=foo
+ h 0.3
+ s %=$$input("",.ctl,0)
+ i ctl="DAR" g gb
+ g main
+hw w !,"Hello world!"
+gb w !,"Goodbye cruel world!"
+ q
+ q  ;;#eor#
+*******

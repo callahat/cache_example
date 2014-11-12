@@ -1,0 +1,104 @@
+^Wed Aug 8, 2007 10:54 AM^
+Indy Racing v 2
+
+^XRACECAR2
+XRACECAR2 ;; ; Aug 08, 2007 10:17 AM
+ ;********************************************************************
+ ; TITLE:   Indy Racing II
+ ; PURPOSE: A simple driving game
+ ; AUTHOR:  TJC
+ ; CALLABLE TAGS:
+ ;    none
+ ; REVISION HISTORY:
+ ; *INITIALS MM/DD/YY DLG# - <What you changed and why>
+ ;********************************************************************
+ ; #STRLOC#1033#String Resources
+ ;********************************************************************
+ n c,carbody,carX,wall,alive,input,oldcurX,oldcurY,shiftdir,x,y,score,speed,carY,btmx,btmy,lcX,lcY
+ s btmx=0
+ s btmy=25
+ w #,"Welcome to Indy Racing. Select your RaceCar"
+ w !,"1-""T"""
+ w !,"2-""M"""
+ w !,"3-""W"""
+ w !,"4-""V"""
+ w !,"5-""0"""
+ w !,"Default is ""H"""
+ r !,">",c
+ s carbody=$s(c=1:"T",c=2:"M",c=3:"W",c=4:"V",c=5:"0",1:"H")
+ s carX=25        ;initial location of the car
+ s carY=10
+ w #
+ f load=1:1:25 d
+ . s wall(load,"l")=20
+ . s wall(load,"r")=30
+ ;
+ w !,"Press ""z"" to go left, and ""x"" to go right. Avoid the walls."
+ w !,"hit ""a"" to go left strongly, and ""s"" to go right strongly"
+ w !,"""o"" to go back,""k"" to go down"
+ r !,"Hit enter to begin! (p pauses)",c
+ ;initialize the racetrack
+ s %=$$crspos(.tempx,.tempy)
+ d %zmv(carX,carY)
+ w carbody
+ s speed=0.05
+ d %zmv(btmx,btmy)
+ f load=1:1:25 d
+ . d dwall
+ f  d  q:'alive
+ . s score=score+1
+ . r input:0
+ . i input="p" d
+ . . w !,"******PAUSED*******"
+ . . w !,"(hit enter, or enter a direction, to resume)"
+ . . r input
+ . s lcX=carX
+ . s lcY=carY
+ . i input="z" s carX=carX-1
+ . i input="x" s carX=carX+1
+ . i input="a" s carX=carX-2
+ . i input="s" s carX=carX+2
+ . i input="o"&(carY>1) s carY=carY-1
+ . i input="k"&(carY<20) s carY=carY+1
+ . f load=1:1:24 d
+ . . s wall(load,"l")=wall(load+1,"l")
+ . . s wall(load,"r")=wall(load+1,"r")
+ . s shiftdir=$r(3)-1
+ . s x=wall(25,"l")+shiftdir
+ . s y=wall(25,"r")+shiftdir
+ . i x>0&(y<50) d
+ . . s wall(25,"l")=x
+ . . s wall(25,"r")=y
+ . i ((score#300)=0)&(score<2100) s wall(25,"r")=wall(25,"r")-1
+ . d dwall
+ . h speed
+ . s alive=carX>wall(carY+2,"l")&(carX<wall(carY+2,"r"))
+ d ded
+ w !,"You died. Game over"
+ w !,"Score:"_score
+ m c=^XRCAR2SCORE
+ i c("val")<score d  i 1
+ . w !,"Congratulations, you beat the previous high score"
+ . w !,"of "_c("val")_" held by "_c("name")
+ . w !,"Please enter your callsign:"
+ . r input
+ . s c("name")=input,c("val")=score
+ . m ^XRCAR2SCORE=c
+ e  w !,"You failed to beat the previous score",!,"of "_c("val")_" held by "_c("name")
+ q
+dwall() ;w #,"SCORE:",score
+ d %zmv(lcX,lcY)
+ w "."
+ d %zmv(btmx,btmy)
+ w !
+ f b=1:1:50 d
+ . w $s(b<=wall(25,"l")!((b>=wall(25,"r"))):"#",1:" ")
+ d %zmv(carX,carY)
+ w carbody
+ d %zmv(btmx,btmy)
+ q
+ded() s carbody="*"
+ d dwall
+ q
+ q  ;;#eor#
+*******

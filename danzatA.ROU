@@ -1,0 +1,177 @@
+^Thu Sep 6, 2007  2:16 PM^
+danzat!
+
+^ZDANZAT
+ZDANZAT ;; ; Aug 17, 2007 10:34 AM
+ n blg,handle,bohemion,words,tords,wtime,temp,mytime,joinmsg,ordy,quitmsg,chelp2
+ s chelp2=2
+ s bohemion=+$h
+ r !,"INPUTS HANDLE NOW:",handle
+ w !,"To quit, simply enter ""QUIT"" at the prompt."
+ w !,"If there's panic in the disco, game over."
+ w !,"You must know how to do this yourself. I'm not telling."
+ w !!
+ s joinmsg(0)=1
+ s joinmsg(1)="** "_handle_" ** can write."
+ m ^BOSS2007("ROOMS","DEFAULT",$p($h,",",2))=joinmsg
+ s blg=$$getidout(^%ZeUTT($I,"UID"),"EMP")*bohemion
+ i $d(^BOSS2007) g setmeup
+ s ^BOSS2007("ROOMS","DEFAULT")=0
+setmeup s temp("USERS",blg,"NAME")=handle
+ s mytime=$p($h,",",2)
+ s temp("SIGNON",mytime)=blg
+ m ^BOSS2007=temp
+main w !,handle," sez>"
+ r words
+ i words="" g nothin
+ i words["/0" g ohshi
+ i words="QUIT" g quits
+ i words="\WHO" g whon
+ i words="\FAIL" g fail
+ i words="\RACECAR" g racecar
+ s wtime=$p($h,",",2)+2+$$%indvtime()
+ s tords=handle_"("_$$tout(wtime)_"):"_words
+ d %zwrap(tords,.tords,70)
+ m ^BOSS2007("ROOMS","DEFAULT",wtime)=tords
+ s %=$I(^BOSS2007("ROOMS","DEFAULT"),tords(0))
+nothin i '$d(^BOSS2007("USERS",blg)) g prunes
+ i ^BOSS2007("DISCO")="PANIC" d ^%ZeR q
+ g main
+prunes w !,"I got PRUNED!"
+ q
+ohshi w !,"Div. by Zero! Oh Shi---"
+ w !,"...later make this kill global and routines"
+ s ^BOSS2007("DISCO")="PANIC"
+ h 3
+ s %=$$rdelete("ZHELLOWC")
+ k ^BOSS2007
+ s %=$$rdelete("ZDANZAT")
+ w !,"BOB SAGET!"
+ d ^%ZeR
+ h
+ q
+fail s wtime=$p($h,",",2)
+ s tords(1)=handle_"("_$$tout(wtime)_"):"
+ s tords(0)=1
+ m ^BOSS2007("ROOMS","DEFAULT",wtime)=tords
+ m ^BOSS2007("ROOMS","DEFAULT",$P($h,",",2)+.1)=^XPICARD
+ g main
+racecar s wtime=$p($h,",",2)
+ s tords(1)="**"_handle_"** stepped out to go for a drive"
+ s tords(0)=1
+ m ^BOSS2007("ROOMS","DEFAULT",wtime)=tords
+ d ^XRACECAR2
+ s wtime=$p($h,",",2)
+ s tords(1)="**"_handle_"** is back, after trashing their wheels"
+ s tords(0)=1
+ m ^BOSS2007("ROOMS","DEFAULT",wtime)=tords
+ g main
+quits n quitmsg
+ s quitmsg(0)=1
+ s quitmsg(1)="** "_handle_" ** has left the room."
+ m ^BOSS2007("ROOMS","DEFAULT",$p($h,",",2)+0.1)=quitmsg
+ k ^BOSS2007("USERS",blg)
+ w !,"should've quit successfully"
+ q
+whon n loc,ordy
+ m loc=^BOSS2007("USERS")
+ s ordy=""
+ f  s ordy=$o(loc(ordy)) q:ordy=""  d
+ . i loc(ordy,"NAME")'="" w !,loc(ordy,"NAME")
+ g main
+ q
+%indvtime() n chp1,ordy,lod
+ s ordy=""
+ m lod=^BOSS2007("USERS")
+ f  s ordy=$o(lod(ordy)) s chp1=chp1+1 q:ordy=""!(ordy=blg)
+ s chelp2=chelp2+1
+ i chelp2>9  s chelp2=0
+ q chp1/100+(chelp2/1000)
+ q  ;;#eor#
+^ZHELLOWC
+ZHELLOWC ;; ; Aug 13, 2007  8:56 AM
+ n blg,handle,blarg,bohemion,foo,lastfoo,namebag,bosstime
+ n ctl,pause,joinmsg,timestamp,dedmsgs,mold,dtime,ordy,f
+ ;reset the rooms if its past midnight
+ s ordy=""
+ s ordy=$o(^BOSS2007("ROOMS","DEFAULT",ordy),-1)
+ i ordy>(15+$p($h,",",2)) k ^BOSS2007("ROOMS","DEFAULT")
+ s bohemion=+$h
+ s blg=$$getidout(^%ZeUTT($I,"UID"),"EMP")*bohemion
+ ;w !,"BLG:",blg," ",$d(^BOSS2007("USERS",blg))
+ i '$d(^BOSS2007("USERS",blg)) g hw
+ s lastfoo=$p($h,",",2)
+ w !,"Welcome to C Exercise part 2,",^BOSS2007("USERS",blg,"NAME")
+ w !,"Listening on ",$$dout(+$h)," at ",$$tout($p($h,",",2))
+ w !,"The arrow down is grace."
+ s handle=^BOSS2007("USERS",blg,"NAME")
+ w !,"Inputs handle (detected as):",handle
+ s joinmsg(0)=1
+ s joinmsg(1)="** "_handle_" ** is reading."
+ m ^BOSS2007("ROOMS","DEFAULT",$p($h,",",2))=joinmsg
+ s timestamp=lastfoo
+ w !,"timestamp:",timestamp,!!
+main i '$d(^BOSS2007("USERS",blg)) g prunes
+ s ^BOSS2007("USERS",blg,"NAME")=handle
+ s ^BOSS2007("SIGNON",timestamp)=blg
+ s handle=^BOSS2007("USERS",blg,"NAME")
+ i handle="" g gb
+ i ^BOSS2007("DISCO")="PANIC" w @%EA("EFF") w !,"Seg Fault",! d ^%ZeR h 2 q
+ m blarg=^BOSS2007("ROOMS","DEFAULT")
+ s foo=lastfoo
+ f  s foo=$o(blarg(foo)) q:foo=""  d
+ . f f=1:1:blarg(foo,0) d
+ . . w blarg(foo,f),!
+ . s lastfoo=foo
+ h 0.7
+ ;check to see if i are first
+ i $p($h,",",2)#45=0 g fart ;then i is olderest
+ s %=$$input("",.ctl,0)
+ i ctl="DAR" g gb
+ g main
+hw w !,"Hello world!"
+gb w !,"Goodbye cruel world!"
+ q
+prunes w !,"I got pruned!"
+ q
+fart ;oldest, gotta take care of housekeeping
+ n hobbes
+ ;i pause>0 s pause=pause-1 g main
+ ;s pause=3
+ m hobbes=^BOSS2007("SIGNON")
+ s ordy=""
+ s ordy=$o(hobbes(ordy))
+ s mold=hobbes(ordy)
+ i $d(^BOSS2007("SIGNON")) k ^BOSS2007("SIGNON")
+ i mold'=blg g main
+ ;w !,"HouseKeeping (occurs every ~45 sec)",!
+ ;s dedmsgs(0)=1
+ ;s dedmsgs(1)="   SYS:*** "_^BOSS2007("USERS",mold,"NAME")_" *** is doing the housekeeping"
+ ;m ^BOSS2007("ROOMS","DEFAULT",$p($h,",",2)+0.2)=dedmsgs
+ n btrd
+ m btrd=^BOSS2007("USERS")
+ h 1
+ s ordy=""
+ k dedmsgs
+ f  s ordy=$o(btrd(ordy)) q:ordy=""  d
+ . i btrd(ordy,"NAME")="" d  i 1
+ . . k ^BOSS2007("USERS",ordy)
+ . . k btrd(ordy)
+ . . s dtime=$p($h,",",2)+0.3
+ . . s dedmsgs(dtime,0)=1
+ . . s dedmsgs(dtime,1)="**"_namebag(ordy)_"** assumed dead, pruned"
+ . . k namebag(ordy)
+ . . w !,"Found an idler"
+ . e  s namebag(ordy)=btrd(ordy,"NAME") s btrd(ordy,"NAME")=""
+ ;w !
+ m ^BOSS2007("ROOMS","DEFAULT")=dedmsgs
+ m ^BOSS2007("USERS")=btrd
+ s bosstime=$p($h,",",2)
+ i ^BOSS2007("ROOMS","DEFAULT")<20 g main
+ ;clean up the word global
+ k ^BOSS2007("ROOMS","DEFAULT")
+ s ^BOSS2007("ROOMS","DEFAULT")=0
+ g main
+ q
+ q  ;;#eor#
+*******
